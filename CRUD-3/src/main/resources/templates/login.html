@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"></meta>
+<meta http-equiv="content-type" content="UTF-8"></meta>
+<title>登录</title>
+<meta
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+	name="viewport"></meta>
+<link rel="stylesheet" href="../../css/bootstrap/dist/css/bootstrap.min.css"></link>
+<link rel="stylesheet" href="../../css/dist/css/AdminLTE.min.css"></link>
+<link rel="stylesheet" href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css"></link>
+<script src="../../js/jquery-1.7.2.min.js"></script>
+<script src="../../js/sweetalert.min.js"></script>
+<script src="../../js/base64.js"></script>
+<script type="text/javascript">
+   //登录
+     $(document).ready(function(){
+        $('#login').click(function(){
+        var username=$("#username").val();
+        var password=$("#password").val();
+		//使用base64进行前端密码加密		
+            $.ajax({
+                    type : "POST",
+                    url : "/user/login1",
+                    data : {
+                        "username" : $("#username").val(),
+                        "password" : $("#password").val(),
+                        "code": $("#code").val()
+                    },
+                    dataType : "json",
+                    success : function(data) {
+                        if (data.result == "4") {
+                         	swal({ 
+							    title: "您确定要登录吗？", 
+							    text: "您真的要登录吗？", 
+							    type: "warning", 
+							    showCancelButton: true, 
+							    closeOnConfirm: false, 
+							    confirmButtonText: "是的，我要登录", 
+							    confirmButtonColor: "#ec6c62" 
+							},function(){
+								window.location.href ="/user/index";
+							})
+                        }  else if(data.result =="0"){
+                            swal("用户名不能为空", "error");
+                        }  else if(data.result =="1"){
+                            swal("密码不能为空", "error");
+                        }  else if(data.result =="2"){
+                            swal("验证码不能为空", "error");
+                        }  else if(data.result =="5"){
+                            swal("用户名或者密码不对", "error");
+                        }  else if(data.result =="3"){
+                            swal("验证码错误", "error");
+                        }
+                    }
+               });
+        });
+        
+        //刷新验证码
+        $("#shuaxin").click(function(){
+           window.location.reload();
+        });
+    });
+  </script>
+</head>
+<body class="hold-transition login-page">
+	<div class="login-box">
+		<div class="login-logo">
+			<b>电梯销售管理平台</b>
+		</div>
+		<!-- /.login-logo -->
+		<div class="login-box-body">
+			<p class="login-box-msg">请登录</p>
+			<div class="form-group has-feedback">
+				<input type="text" class="form-control" id="username" placeholder="账号" />
+				<span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+			</div>
+			<div class="form-group has-feedback">
+				<input type="password" class="form-control" id="password"
+					placeholder="密码" /> <span
+					class="glyphicon glyphicon-lock form-control-feedback"></span>
+			</div>
+			<div class="row">
+				<div class="col-xs-8">
+					<div class="checkbox icheck">
+						<img id="shuaxin" src="/user/getGifCode" />
+					</div>
+				</div>
+
+				<div class="col-xs-4">
+					<input type="text" id="code" placeholder="验证码"
+						style="float: right;width:140px;height:35px;margin-top:10px;margin-bottom: 5px;" />
+				</div>
+				<div class="col-xs-4">
+					<button type="submit" id="login"
+						class="btn btn-primary btn-block btn-flat">登录</button>
+				</div>
+				<div class="social-auth-links text-center">
+					<a href="registerUI">注册</a>
+				</div>
+			</div>
+			<div class="social-auth-links text-center">
+				<a href="modifyUI">忘记密码</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+
+

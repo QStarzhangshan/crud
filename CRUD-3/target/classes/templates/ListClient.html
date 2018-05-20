@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="content-type" content="UTF-8"></meta>
+  
+  <title>展示客户</title>
+  <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script src="../../js/common/client.js"></script>
+  <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"/>
+
+<!-- 可选的Bootstrap主题文件（一般不用引入） -->
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap-theme.min.css"/>
+
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+
+  
+  <script type="text/javascript">
+    $(function () {
+      var $Li = $("#container>ul");
+      var $td_1 = $("#name");
+      var $td_2 = $("#rtime");
+      var $td_3 = $("#address");
+
+      $('#query').click(function(){
+      $.ajax({
+        type:"get",
+        url:"/client/client_namequery",
+        data:{
+          "str1" : $("#querybyname").val()
+        },
+        dataType:"json",
+
+        success:function (data) {
+        	console.log(data);
+          var  json = data.clients1;
+          var  client_name1 ="";
+          var  client_rtime1 ="";
+          var  client_address1 ="";
+      	 $td_1.html(" ");
+         $td_2.html(" ");
+         $td_3.html(" ");
+          for(var key in json){
+            var client_rtime = json[key].client_rtime;
+            var client_name = json[key].client_name;
+            var client_address = json[key].client_address;
+          	var client_id = json[key].id;
+           //client_name1  =  client_name1 + client_name +"<br/>";
+           //client_rtime1 = client_rtime1 + client_rtime +"<br/>";
+           //client_address1  = client_address1 + client_address +"<br/>";
+           debugger;
+            $td_1.append(client_name+"<br/>");
+            $td_2.append(client_rtime+"<br/>");
+            $td_3.append(client_address+'&#160;&#160;&#160;&#160;<a onclick= "add('+client_id+')">修改</a>'+
+            '&#160;&#160;&#160;&#160;<a onclick= "deleteclient('+client_id+')">删除</a><br/>');
+           
+            //console.log('姓名：',client_rtime);
+          }
+          
+        }
+      })	
+      })
+
+      $.ajax({
+        type:"get",
+        url:"/client/list",
+        data:{
+
+        },
+        dataType:"json",
+        success:function (data) {
+
+          var json=data.clients;
+          for(var key in json){
+            var client_rtime = json[key].client_rtime;
+            var client_name = json[key].client_name;
+            var client_address = json[key].client_address;
+            var client_id = json[key].id;
+            $td_1.append(client_name+"<br/>");
+            $td_2.append(client_rtime+"<br/>");
+            $td_3.append(client_address+'&#160;&#160;&#160;&#160;<a value="'+client_id+'" id="'+client_id+'" onclick="modify('+client_id+')">修改</a>'+
+            '&#160;&#160;&#160;&#160;<a onclick= "deleteclient('+client_id+')">删除</a><br/>');
+           // console.log('id：',client_id);
+           // console.log('姓名：',client_name);
+           // console.log('时间：',client_rtime);
+           // console.log('地址：',client_address);
+			
+          }
+        }
+      })
+    })
+  </script>
+</head>
+<body>
+<INPUT TYPE="text" id="querybyname"/><button type="submit" id="query">按姓名查询</button>
+<input type="submit" value="按时间排序" onclick="orderByTime()"/>
+<div id="container">
+  <table>
+    <thead>
+    <tr>
+      <td class="active">&#160;&#160;姓名&#160;&#160;</td>
+      <td class="success">&#160;&#160;联系时间&#160;&#160;</td>
+      <td class="warning">&#160;&#160;地址&#160;&#160;</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr >
+      <td id="name"></td>
+      <td id="rtime"></td>
+      <td id="address"></td>
+    </tr>
+    </tbody>
+  </table>
+  <a href="" ></a>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">修改</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="control-label">姓名:</label>
+            <input type="text" class="form-control" id="client_names"/>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="control-label">联系时间:</label>
+            <input class="form-control" id="message-text"></input>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="control-label">地址:</label>
+            <input class="form-control" id="client-addresss"></input>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button"  id='submit' class="btn btn-primary">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+<script>
+function modify(id){
+	
+	$.ajax({
+		type:"get",
+		url:"/client/modifyUI",
+		data:{
+			"client_id":id
+		},
+		dataType:"html",
+		success:function(data){
+			
+			window.location.href ="/client/modifyUI?client_id="+id;
+		},
+		error:function(data){
+			console.log(data);
+		}
+	})
+}
+
+
+
+function add(id){
+	$('#exampleModal').modal('show')
+	var client_rtime;
+	var client_name;
+	var client_address;
+	var client_id
+	console.log(id);
+	   $.ajax({
+	        type:"get",
+	        url:"/client/list",
+	        data:{
+	        },
+	        dataType:"json",
+	        success:function (data) {
+
+	          var json=data.clients;
+	          for(var key in json){
+	             client_rtime = json[key].client_rtime;
+	             client_name = json[key].client_name;
+	             client_address = json[key].client_address;
+	             client_id = json[key].id;
+	         	if(id ==client_id ){
+	         	$('#client_names').val(client_name);
+	         	$('#client-addresss').val( client_address);
+	         	$('#message-text').val(client_rtime);
+				
+	         	$("#submit").click(function(){
+	         		//console.log(id);
+					$.ajax({
+						type:"POST",
+						url:"/client/modifyClient",
+						data:{
+							"client_name"  : $("#client_names").val(),
+							"client_rtime" : $("#message-text").val(),
+							"client_address" : $("#client-addresss").val(),
+							"id" : id
+						},
+						dataType:"json",
+						success:function (data){
+							console.log($("#client_names").val());
+							if(data.result=="1"){
+								alert("修改成功！")
+							}else{
+								alert("修改失败")
+							}
+						}
+					})
+				})
+	         	}
+	          }
+	        }
+	      })
+}
+function deleteclient(id){
+	$.ajax({
+		type:"get",
+		url:"/client/deleteClient",
+		data:{
+			"id" : id
+		},
+		dataType:"json",
+		
+		success:function(data){
+			debugger;
+			var client_id = data.client.id;
+			console.log(client_id);
+			if(id==client_id){
+				var r=confirm("确定要删除么？");
+				if(r==true){
+					alert("删除成功");
+				}else{
+					alert("删除失败！");
+				}
+				}else{
+					alert("删除没成功！");
+			}
+			window.location.reload();
+		}
+	})
+}
+</script>
+
+</html>

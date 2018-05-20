@@ -1,0 +1,45 @@
+create table `t_book`(
+	`id` int,
+	`bookName` varchar(60),
+	`price` float,
+	`author` varchar(30),
+	`bookTypeId` int
+
+);
+
+insert into `t_book`(`id`,`bookName`,`price`,`author`,`bookTypeId`) values (1,'java very good',200.00,'°£Ê·¶ù'£¬1)£»
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE TRIGGER trig_bookType AFTER INSERT
+	ON t_book2 FOR EACH ROW 
+		UPDATE t_bookType SET bookNum=bookNum+1 WHERE new.bookTypeId=t_booktype.id;
+		

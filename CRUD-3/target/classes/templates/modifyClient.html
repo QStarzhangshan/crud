@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="content-type" content="UTF-8"></meta>
+<title>Insert title here</title>
+<script type="text/javascript" src="../../js/jquery-1.7.2.min.js"></script>
+</head>
+<body>
+	
+	<input type="hidden" th:value="${client_id}" id="client_id1"/>
+	<img alt="" src="" id="img"/><br/>
+	<input type="file" name="file" id="uploadimage" multiple="multiple"/><br/>  
+    <input type="button" value="上传" id="btn" style="width:137px; height:27px"/><br/>
+	<input type="text" value="" id="client_name"/><span>公司名</span><br/>
+	<input type="text" value="" id="client_person"/><span>个人姓名</span><br/>
+	<input type="text" value="" id="client_address"/><span>地址</span><br/>
+	<input type="text" value="" id="client_phone"/><span>电话</span><br/>
+	<select id="payment_method">
+	</select><span>支付方式</span><br/>
+	<input type="submit" value="修改" id="xiugai"/>
+	
+</body>
+<script>
+$("#btn").click(function(){
+	var $img = $("#img");
+	var file = document.getElementById(uploadimage);
+	$.ajax({
+		url:"/upload",
+		type:"post",
+		async: false,  
+	    cache: false, 
+	    processData: false,// 告诉jQuery不要去处理发送的数据
+	    contentType: false,// 告诉jQuery不要去设置Content-Type请求头
+		data:{
+			"file" : file
+		},
+		dataType:"json",
+		success:function(data){
+			var filename = data.filename;
+			console.log(filename);
+		}
+	})
+})
+
+
+
+
+$(function(){
+	var $payment_method = $("#payment_method");	
+	$.ajax({
+		type:"get",
+		url:"/client/payment",
+		data:{		
+		},
+		dataType:"json",
+		
+		success:function(data){
+			var json = data.payments;
+			var payment_method="";
+			for(var key in json){
+				payment_method = json[key].method;
+				console.log(payment_method);
+				$payment_method.append('<option value="'+payment_method+'">'+payment_method+'</option>');
+			}
+		}
+	})
+
+
+})
+
+$(function(){
+	var client_id1=$("#client_id1").val();
+	var $li_name = $("#client_name");
+	var $li_person = $("#client_person");
+	var $li_address = $("#client_address");
+	var $li_phone = $("#client_phone");
+	var way = $("#payment_method:checked").val();
+	console.log(way);
+	
+	$.ajax({
+		type:"get",
+		url:"/client/list",
+		data:{		
+		},
+		dataType:"json",
+		success:function(data){
+			
+			var json=data.clients;
+			for(var key in json){
+				 client_person = json[key].client_rtime;
+	             client_name = json[key].client_name;
+	             client_address = json[key].client_address;
+	             client_phone = json[key].client_phone;
+	             client_payment = json[key].client_payment;
+	             client_id = json[key].id;
+	             if(client_id1==client_id){
+	            	$('#client_name').val(client_name);
+	 	         	$('#client_person').val( client_person);
+	 	         	$('#client_address').val(client_address);
+	 	         	$('#client_phone').val(client_phone);
+	 	         	$("#payment_method").val(client_payment);
+	             $("#xiugai").click(function(){
+	            	 $.ajax({
+	            		 type:"post",
+	            		 url:"/client/modifyClient",
+	            		 data:{
+	            			 "client_name":$('#client_name').val(),
+	            			 "client_person":$('#client_person').val(),
+	            			 "client_address":$('#client_address').val(),
+	            			 "client_phone":$('#client_phone').val(),
+	            			 "id":client_id1,
+	            	 		 "client_payment":$("#payment_method option:selected").val()
+	            		 },
+	            		 dataType:"json",
+	            		 success:function(data){
+	            			 if(data.result==0){
+	            				 alert("修改成功！");
+	            				 window.location.href="/client/listUI";
+	            			 }else if(data.result==1){
+	            				 alert("公司名不能为空");
+	            			 }else if(data.result==2){
+	            				 alert("地址不能空");
+	            			 }else if(data.result==3){
+	            				 alert("姓名不为空");
+	            			 }else if(data.result==4){
+	            				 alert("电话空");
+	            			 }
+	            		 }
+	            	 })
+	             })
+	             }
+			}
+		}
+	})
+
+})
+		
+		
+
+</script>
+</html>

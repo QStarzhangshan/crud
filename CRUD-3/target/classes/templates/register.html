@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="/user/register" method="post">
+		<p>用户名<input type="text" name="username"/></p>
+		<p>密码<input type="password" name="password"/></p>
+		<p>确认密码 <input type="password" name="password2"/></p>
+		<p>邮箱<input type="text" name="mail"/></p>
+		<p>身份<input type="text" name="role_id"/></p>
+		<p>验证码<a href="http://localhost:8080/user/registerUI"><img alt="验证码" src="/user/getGifCode"/></a></p>
+		<p><input type="text" name="code"/></p>
+		<p><button>注册</button></p>
+	</form>
+</body>
+</html>
